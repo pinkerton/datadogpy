@@ -71,7 +71,15 @@ def initialize(api_key=None, app_key=None, host_name=None, api_host=None,
     """
     # API configuration
     api._api_key = api_key if api_key is not None else os.environ.get('DATADOG_API_KEY')
+    # DD_ is consistent with APM configuration, fall back to it
+    if not api._api_key:
+        api._api_key = os.environ.get('DD_API_KEY')
+
     api._application_key = app_key if app_key is not None else os.environ.get('DATADOG_APP_KEY')
+    # Again, fall back to DD_ for application key
+    if not api._application_key:
+        api._application_key = os.environ.get('DD_APP_KEY')
+
     api._host_name = host_name if host_name is not None else get_hostname()
     api._api_host = api_host if api_host is not None else \
         os.environ.get('DATADOG_HOST', 'https://api.datadoghq.com')

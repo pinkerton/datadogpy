@@ -33,8 +33,12 @@ class _LambdaDecorator(object):
             if not cls._was_initialized:
                 cls._was_initialized = True
                 api._api_key = os.environ.get('DATADOG_API_KEY')
+                # DD_ is consistent with APM configuration, fall back to it
+                if not api._api_key:
+                    api._api_key = os.environ.get('DD_API_KEY')
+                
                 api._api_host = os.environ.get('DATADOG_HOST', 'https://api.datadoghq.com')
-
+                
                 # Async initialization of the TLS connection with our endpoints
                 # This avoids adding execution time at the end of the lambda run
                 t = Thread(target=_init_api_client)
